@@ -14,6 +14,17 @@ INSTALLED_APPS = (
 )
 ```
 
+Add the API endpoints to your project URLs:
+
+```python
+from django.conf.urls import include, url
+
+urlpatterns = [
+    url(r'^api/file/', include('cotidia.file.urls.api.file',
+        namespace="file-api")),
+]
+```
+
 ## Settings
 
 ### `FILE_UPLOAD_PATH`
