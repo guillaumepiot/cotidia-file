@@ -1,4 +1,4 @@
-# Cotidia file
+# Cotidia File
 
 File upload handling for the Cotidia ecosystem.
 
@@ -16,4 +16,31 @@ INSTALLED_APPS = (
 
 ## Settings
 
-`UPLOAD_PATH`: Defines the path after Django's `MEDIA_ROOT` where the files should be uploaded.
+### `FILE_UPLOAD_PATH`
+
+- Type: *String*
+- Default: `"uploads/"`
+
+Defines the path after Django's `MEDIA_ROOT` where the files should be uploaded.
+
+### `FILE_ALLOWED_TYPES`
+
+- Type: *List*
+- Default: `[]`
+
+Defines the list of allowed mimetypes, for example: `['application/pdf', 'text/plain']`. An empty list would allow all mimetypes.
+
+### `FILE_MAX_UPLOAD_SIZE`
+
+- Type: *Integer*
+- Default: `4194304`
+
+Defines the list of maximum file size for upload in bytes.
+
+## Maintenance
+
+The test suite must be run after all code update.
+
+```console
+$ python runtests.py
+```
