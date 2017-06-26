@@ -18,6 +18,7 @@ DEFAULT_SETTINGS = dict(
         "django.contrib.staticfiles",
 
         "cotidia.file",
+        "cotidia.file.tests",
         "rest_framework",
         "rest_framework.authtoken",
     ],
@@ -44,7 +45,7 @@ DEFAULT_SETTINGS = dict(
     DATABASES={
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
+            "NAME": ":memory:"
         }
     },
     SITE_ID=1,
