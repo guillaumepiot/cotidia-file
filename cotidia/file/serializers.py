@@ -20,6 +20,7 @@ class FileSerializer(serializers.ModelSerializer):
             'mimetype',
             'content_type',
             'object_id',
+            'taxonomy',
             'created',
             'updated'
         ]
