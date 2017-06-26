@@ -29,7 +29,6 @@ class File(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        storage = self.f.storage
         self.name = self.f.name
         self.mimetype = magic.from_buffer(self.f.read(), mime=True)
         super().save(*args, **kwargs)
