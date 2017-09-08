@@ -21,15 +21,15 @@ class FileSerializer(serializers.ModelSerializer):
             'content_type',
             'object_id',
             'taxonomy',
-            'created',
-            'updated'
+            'created_at',
+            'updated_at'
         ]
         read_only_fields = [
             'uuid',
             'name',
             'mimetype',
-            'created',
-            'updated'
+            'created_at',
+            'updated_at'
         ]
 
     def validate_f(self, value):
