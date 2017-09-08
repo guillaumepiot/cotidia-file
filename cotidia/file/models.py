@@ -22,11 +22,15 @@ class File(models.Model):
 
     taxonomy = models.CharField(max_length=255, null=True)
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    order_id = models.IntegerField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ("-created",)
+        verbose_name = "File"
+        verbose_name_plural = "Files"
+        ordering = ("order_id", "-created_at",)
 
     def __str__(self):
         return self.name
