@@ -20,8 +20,10 @@ Add the API endpoints to your project URLs:
 from django.conf.urls import include, url
 
 urlpatterns = [
-    url(r'^api/file/', include('cotidia.file.urls.api.file',
-        namespace="file-api")),
+    url(
+        r'^api/file/',
+        include('cotidia.file.urls.api.file', namespace="file-api")
+    ),
 ]
 ```
 
