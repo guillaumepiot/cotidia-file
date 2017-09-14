@@ -1,10 +1,12 @@
-import os, shutil
+import os
+import shutil
 
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import Permission
 
+from cotidia.account.models import User
 from cotidia.file.models import File
 from cotidia.file.factory import FileFactory
 from cotidia.file.conf import settings
@@ -33,15 +35,16 @@ class FileAdminTests(TestCase):
         # Create the client and login the user
         self.c = Client()
         self.c.login(
-            username="admin.permitted",
+            email=self.admin_user_permitted.email,
             password="demo1234")
 
     def tearDown(self):
-        shutil.rmtree(os.path.join(
+        shutil.rmtree(
+            os.path.join(
                 os.path.dirname(__file__),
                 '../../../../%s' % settings.FILE_UPLOAD_PATH
-                )
             )
+        )
 
     def test_delete_file(self):
         """Test that we can delete an object."""
@@ -50,8 +53,8 @@ class FileAdminTests(TestCase):
             'file-admin:file-delete',
             kwargs={
                 'pk': self.object.id
-                }
-            )
+            }
+        )
 
         # Test that the page load first
         response = self.c.get(url)

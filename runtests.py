@@ -17,6 +17,14 @@ DEFAULT_SETTINGS = dict(
         "django.contrib.messages",
         "django.contrib.staticfiles",
 
+        "django_otp",
+        "django_otp.plugins.otp_static",
+        "django_otp.plugins.otp_totp",
+        "two_factor",
+
+        "cotidia.admin",
+        "cotidia.account",
+        "cotidia.mail",
         "cotidia.file",
         "cotidia.file.tests",
         "rest_framework",
@@ -37,6 +45,7 @@ DEFAULT_SETTINGS = dict(
             "OPTIONS": {
                 "debug": True,
                 "context_processors": [
+                    "django.template.context_processors.request",
                     "django.contrib.auth.context_processors.auth",
                 ]
             }
@@ -53,6 +62,7 @@ DEFAULT_SETTINGS = dict(
     APP_URL="http://localhost:8000",
     ROOT_URLCONF="cotidia.file.tests.urls",
     SECRET_KEY="notasecret",
+    AUTH_USER_MODEL="account.User",
     STATIC_URL='/static/',
     REST_FRAMEWORK={
         'DEFAULT_AUTHENTICATION_CLASSES': (

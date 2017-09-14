@@ -3,12 +3,13 @@ import os
 from django.template.defaultfilters import filesizeformat
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import Permission
 
 from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
 
+from cotidia.account.models import User
 from cotidia.core.utils.doc import Doc
 from cotidia.file.utils.generator import (
     generate_pdf_file,
@@ -23,7 +24,7 @@ from cotidia.file.tests.models import GenericItem
 class FileAPITests(APITestCase):
 
     maxDiff = None
-    display_doc = True
+    display_doc = False
 
     def setUp(self):
         self.doc = Doc()
@@ -72,8 +73,8 @@ class FileAPITests(APITestCase):
                 os.path.join(
                     os.path.dirname(__file__),
                     '../../../../%s' % settings.FILE_UPLOAD_PATH
-                    )
                 )
+            )
 
     def test_upload_file_permission_restricted(self):
         """Test that a user without the necessary permissions is restricted."""
