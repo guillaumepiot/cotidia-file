@@ -39,3 +39,12 @@ class File(models.Model):
         self.name = self.f.name
         self.mimetype = magic.from_buffer(self.f.read(), mime=True)
         super().save(*args, **kwargs)
+
+    @property
+    def is_image(self):
+        return self.mimetype.startswith("image")
+
+    def build_variation_path(self, variation):
+        path_parts = self.f.name.split("/")
+        path_parts.insert(-1, variation)
+        return "/".join(path_parts)
