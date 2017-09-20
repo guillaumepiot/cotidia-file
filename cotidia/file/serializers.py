@@ -39,13 +39,13 @@ class FileSerializer(serializers.ModelSerializer):
             if mimetype not in settings.FILE_ALLOWED_TYPES:
                 raise serializers.ValidationError(
                     'File type (%s) is invalid.' % mimetype
-                    )
+                )
             value.seek(0)
         # Validate file size
         if value.size > settings.FILE_MAX_UPLOAD_SIZE:
             raise serializers.ValidationError(
                 "File size too large. It must be less than {}".format(
                     filesizeformat(settings.FILE_MAX_UPLOAD_SIZE))
-                )
+            )
 
         return value

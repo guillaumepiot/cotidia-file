@@ -1,4 +1,7 @@
 import os
+import shutil
+
+from pathlib import Path
 
 from django.template.defaultfilters import filesizeformat
 from django.core.urlresolvers import reverse
@@ -31,7 +34,6 @@ class FileAPITests(APITestCase):
 
         # Test settings
         settings.FILE_MAX_UPLOAD_SIZE = 1600  # 1.6kb
-        settings.FILE_ALLOWED_TYPES = ['application/pdf']
 
         # Create a generic item to test the generic foreign key
         self.item = GenericItem.objects.create()
@@ -65,16 +67,8 @@ class FileAPITests(APITestCase):
         self.admin_user_permitted.user_permissions.add(permission)
 
     def tearDown(self):
-        # Clean up uploaded files
-        if File.objects.filter():
-            f = File.objects.filter().latest("id")
-            os.remove(f.f.path)
-            os.rmdir(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    '../../../../%s' % settings.FILE_UPLOAD_PATH
-                )
-            )
+        if Path(settings.FILE_UPLOAD_PATH).is_dir():
+            shutil.rmtree(settings.FILE_UPLOAD_PATH)
 
     def test_upload_file_permission_restricted(self):
         """Test that a user without the necessary permissions is restricted."""
@@ -189,22 +183,25 @@ class FileAPITests(APITestCase):
     def test_file_type_validation(self):
         """Test if we get a validation error for invalid file types."""
 
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+        with self.settings(FILE_ALLOWED_TYPES=['application/pdf']):
 
-        url = reverse('file-api:upload')
+            self.client.credentials(
+                HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key
+            )
 
-        text_file = generate_text_file()
+            url = reverse('file-api:upload')
 
-        data = {
-            'f': text_file
-        }
+            text_file = generate_text_file()
 
-        response = self.client.post(url, data, format='multipart')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(
-            response.data['f'],
-            ['File type (text/plain) is invalid.']
+            data = {
+                'f': text_file
+            }
+
+            response = self.client.post(url, data, format='multipart')
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            self.assertEqual(
+                response.data['f'],
+                ['File type (text/plain) is invalid.']
             )
 
     def test_file_filesize_validation(self):
@@ -232,7 +229,7 @@ class FileAPITests(APITestCase):
                 'File size too large. It must be less than {}'.format(
                     max_upload_size_fmt)
             ]
-            )
+        )
 
     def test_upload_file_with_taxonomy(self):
         """Test if we can upload a file with taxonomy."""
@@ -308,7 +305,8 @@ class FileAPITests(APITestCase):
     def test_upload_file_public(self):
         """Test a sub class of the upload view with no permissions required.
 
-        The view will also handle the content_type itself."""
+        The view will also handle the content_type itself.
+        """
 
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
@@ -343,3 +341,37 @@ class FileAPITests(APITestCase):
                 'response': response.data
             }
             self.doc.display_section(content)
+
+    def test_upload_file_with_image_variations(self):
+        """Test if we can upload a file with image variations."""
+
+        variations = {
+            "thumbnail": ["crop", 100, 100],
+            "small": ["resize", 100, 100]
+        }
+
+        with self.settings(FILE_IMAGE_VARIATIONS=variations):
+
+            self.client.credentials(
+                HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key
+            )
+
+            url = reverse('file-api:upload')
+
+            img_file = generate_image_file()
+
+            data = {
+                'f': img_file
+            }
+
+            response = self.client.post(url, data, format='multipart')
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(response.data["name"], "test.PNG")
+            self.assertEqual(response.data["mimetype"], "image/png")
+
+            f = File.objects.latest("id")
+            # Check that the variations exist
+            for variation in variations.keys():
+                path = f.build_variation_path(variation)
+                self.assertTrue(Path(path).is_file())
+

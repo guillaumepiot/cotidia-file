@@ -50,6 +50,18 @@ Defines the list of allowed mimetypes, for example: `['application/pdf', 'text/p
 
 Defines the list of maximum file size for upload in bytes.
 
+## Commands
+
+### Generate image variations for all files
+
+Command: `generate_image_variations`
+
+Example:
+
+```console
+$ python manage.py generate_image_variations
+```
+
 ## Maintenance
 
 The test suite must be run after all code update.
