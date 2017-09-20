@@ -50,6 +50,22 @@ Defines the list of allowed mimetypes, for example: `['application/pdf', 'text/p
 
 Defines the list of maximum file size for upload in bytes.
 
+### `IMAGE_VARIATIONS`
+
+Define image variations for image upload. All variations are generated on save.
+
+Options:
+
+- "crop" cut the largest portion of the image fitting in the crop size
+- "thumbnail" reduce the file size to fit within the width and height
+
+Format: [`action_type`, `width`, `height`]
+
+IMAGE_VARIATIONS = {
+        "thumbnail": ["crop", 100, 100],
+        "small": ["resize", 100, 100]
+    }
+
 ## Commands
 
 ### Generate image variations for all files
