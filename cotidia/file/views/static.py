@@ -19,7 +19,7 @@ def serve_variation(request, path):
     variation = path_parts[-2]
     file_name = path_parts[-1]
 
-    if variation not in settings.FILE_VARIATIONS.keys():
+    if variation not in settings.FILE_IMAGE_VARIATIONS.keys():
         raise Http404("Variation '{}' does not exist.".format(variation))
 
     try:

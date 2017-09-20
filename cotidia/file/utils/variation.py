@@ -9,8 +9,8 @@ from cotidia.file.conf import settings
 
 
 def generate_variation(f, variation):
-    action = settings.FILE_VARIATIONS[variation][0]
-    size = settings.FILE_VARIATIONS[variation][1:3]
+    action = settings.FILE_IMAGE_VARIATIONS[variation][0]
+    size = settings.FILE_IMAGE_VARIATIONS[variation][1:3]
     file_type = f.mimetype.replace("image/", "")
 
     # Open original file in read-only mode

@@ -9,7 +9,7 @@ class FileConf(AppConf):
     ALLOWED_TYPES = []  # Empty list will allow all
     MAX_UPLOAD_SIZE = 4194304  # 4MB
 
-    VARIATIONS = {
+    IMAGE_VARIATIONS = {
         "thumbnail": ["crop", 100, 100],
         "small": ["resize", 100, 100]
     }
