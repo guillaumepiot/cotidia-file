@@ -26,7 +26,7 @@ class Command(BaseCommand):
                         )
 
                     self.stdout.write(
-                        self.style.ERROR(
+                        self.style.SUCCESS(
                             'Generted vairation "%s" for "%s"' % (variation, f.name)
                         )
                     )
