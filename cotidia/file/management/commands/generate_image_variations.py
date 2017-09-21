@@ -1,3 +1,5 @@
+import sys
+
 from django.core.management.base import BaseCommand
 
 from cotidia.file.models import File
