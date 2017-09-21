@@ -24,6 +24,12 @@ class Command(BaseCommand):
                                 'Original file not found for "%s"' % f.name
                             )
                         )
+                    except:
+                        self.stdout.write(
+                            self.style.ERROR(
+                                'File could not be processed "%s"' % sys.exc_info()[0]
+                            )
+                        )
 
                     self.stdout.write(
                         self.style.SUCCESS(
