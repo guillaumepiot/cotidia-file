@@ -14,5 +14,11 @@ class FileConf(AppConf):
         "small": ["resize", 100, 100]
     }
 
+    RASTER_IMAGE_FORMATS = [
+        "image/gif",
+        "image/jpeg",
+        "image/png",
+    ]
+
     class Meta:
         prefix = 'file'

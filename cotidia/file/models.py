@@ -44,6 +44,10 @@ class File(models.Model):
     def is_image(self):
         return self.mimetype.startswith("image")
 
+    @property
+    def is_raster_image(self):
+        return self.mimetype in settings.FILE_RASTER_IMAGE_FORMATS
+
     def build_variation_path(self, variation):
         path_parts = self.f.name.split("/")
         path_parts.insert(-1, variation)

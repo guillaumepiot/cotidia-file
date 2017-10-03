@@ -8,6 +8,6 @@ from cotidia.file.utils.variation import generate_variation
 
 @receiver(post_save, sender=File)
 def handle_image_variations(sender, instance, **kwargs):
-    if instance.is_image and settings.FILE_IMAGE_VARIATIONS:
+    if instance.is_raster_image and settings.FILE_IMAGE_VARIATIONS:
         for variation in settings.FILE_IMAGE_VARIATIONS.keys():
             generate_variation(instance, variation)

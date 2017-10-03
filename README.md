@@ -50,7 +50,7 @@ Defines the list of allowed mimetypes, for example: `['application/pdf', 'text/p
 
 Defines the list of maximum file size for upload in bytes.
 
-### `IMAGE_VARIATIONS`
+### `FILE_IMAGE_VARIATIONS`
 
 Define image variations for image upload. All variations are generated on save.
 
@@ -61,10 +61,25 @@ Options:
 
 Format: [`action_type`, `width`, `height`]
 
-IMAGE_VARIATIONS = {
-        "thumbnail": ["crop", 100, 100],
-        "small": ["resize", 100, 100]
-    }
+```
+FILE_IMAGE_VARIATIONS = {
+    "thumbnail": ["crop", 100, 100],
+    "small": ["resize", 100, 100]
+}
+```
+
+### `FILE_RASTER_IMAGE_FORMATS`
+
+Define which image type will be accepted to create variations. Essentially
+any image that can be rasterized.
+
+```
+FILE_RASTER_IMAGE_FORMATS = [
+    "image/gif",
+    "image/jpeg",
+    "image/png",
+]
+```
 
 ## Commands
 

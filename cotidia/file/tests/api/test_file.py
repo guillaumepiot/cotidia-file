@@ -375,3 +375,42 @@ class FileAPITests(APITestCase):
                 path = f.build_variation_path(variation)
                 self.assertTrue(Path(path).is_file())
 
+    def test_non_raster_image_variations(self):
+        """Test if we upload a non raster image no variations is created."""
+
+        variations = {
+            "thumbnail": ["crop", 100, 100],
+            "small": ["resize", 100, 100]
+        }
+
+        raster_image_formats = [
+            "image/gif"
+        ]
+
+        with self.settings(
+                FILE_IMAGE_VARIATIONS=variations,
+                FILE_RASTER_IMAGE_FORMATS=raster_image_formats
+        ):
+            self.client.credentials(
+                HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key
+            )
+
+            url = reverse('file-api:upload')
+
+            img_file = generate_image_file()
+
+            data = {
+                'f': img_file
+            }
+
+            response = self.client.post(url, data, format='multipart')
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(response.data["name"], "test.PNG")
+            self.assertEqual(response.data["mimetype"], "image/png")
+
+            f = File.objects.latest("id")
+            # Check that the variations exist
+            for variation in variations.keys():
+                path = f.build_variation_path(variation)
+                self.assertFalse(Path(path).is_file())
+
