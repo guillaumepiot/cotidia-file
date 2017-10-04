@@ -18,6 +18,9 @@ class FileSerializer(serializers.ModelSerializer):
             'f',
             'name',
             'mimetype',
+            'size',
+            'width',
+            'height',
             'content_type',
             'object_id',
             'taxonomy',
@@ -28,6 +31,9 @@ class FileSerializer(serializers.ModelSerializer):
             'uuid',
             'name',
             'mimetype',
+            'size',
+            'width',
+            'height',
             'created_at',
             'updated_at'
         ]

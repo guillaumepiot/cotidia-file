@@ -1,6 +1,8 @@
 import uuid
 import magic
 
+from django.core.files.images import get_image_dimensions
+
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -20,6 +22,11 @@ class File(models.Model):
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    # File related data
+    width = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+    size = models.IntegerField(null=True)
+
     taxonomy = models.CharField(max_length=255, null=True)
 
     order_id = models.IntegerField(null=True)
@@ -38,6 +45,9 @@ class File(models.Model):
     def save(self, *args, **kwargs):
         self.name = self.f.name
         self.mimetype = magic.from_buffer(self.f.read(), mime=True)
+        self.size = self.f.size
+        if self.is_image:
+            self.width, self.height = get_image_dimensions(self.f)
         super().save(*args, **kwargs)
 
     @property

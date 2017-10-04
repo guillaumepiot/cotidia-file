@@ -131,6 +131,7 @@ class FileAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["mimetype"], "application/pdf")
+        self.assertEqual(response.data["size"], pdf_file.getbuffer().nbytes)
 
         if self.display_doc:
             payload = data.copy()
@@ -346,8 +347,8 @@ class FileAPITests(APITestCase):
         """Test if we can upload a file with image variations."""
 
         variations = {
-            "thumbnail": ["crop", 100, 100],
-            "small": ["resize", 100, 100]
+            "thumbnail": ["crop", 75, 75],
+            "small": ["resize", 50, 50]
         }
 
         with self.settings(FILE_IMAGE_VARIATIONS=variations):
@@ -358,7 +359,7 @@ class FileAPITests(APITestCase):
 
             url = reverse('file-api:upload')
 
-            img_file = generate_image_file()
+            img_file = generate_image_file(size=(200, 200))
 
             data = {
                 'f': img_file
@@ -368,6 +369,12 @@ class FileAPITests(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(response.data["name"], "test.PNG")
             self.assertEqual(response.data["mimetype"], "image/png")
+            self.assertEqual(
+                response.data["size"],
+                img_file.getbuffer().nbytes
+            )
+            self.assertEqual(response.data["width"], 200)
+            self.assertEqual(response.data["height"], 200)
 
             f = File.objects.latest("id")
             # Check that the variations exist
