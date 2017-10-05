@@ -7,7 +7,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from cotidia.file.conf import settings
-from cotidia.admin.models import OrderableMixin
+from cotidia.admin.mixins import OrderableMixin
 
 
 class File(models.Model, OrderableMixin):
