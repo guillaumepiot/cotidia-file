@@ -13,8 +13,11 @@ def set_order_id(sender, instance, **kwargs):
         last_file = File.objects.filter(
             content_type=instance.content_type,
             object_id=instance.object_id
-        ).last()
-        instance.order_id = last_file.order_id + 1
+        ).exclude(order_id=None).last()
+        if last_file:
+            instance.order_id = last_file.order_id + 1
+        else:
+            instance.order_id = 1
 
 
 @receiver(post_save, sender=File)
