@@ -93,6 +93,16 @@ Example:
 $ python manage.py generate_image_variations
 ```
 
+### Set file order IDs
+
+Command: `set_file_order_ids`
+
+Example:
+
+```console
+$ python manage.py set_file_order_ids
+```
+
 ## Maintenance
 
 The test suite must be run after all code update.
