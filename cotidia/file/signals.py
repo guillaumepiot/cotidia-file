@@ -1,9 +1,20 @@
 from django.dispatch import receiver
-from django.db.models.signals import post_save
+from django.db.models.signals import pre_save, post_save
 
 from cotidia.file.models import File
 from cotidia.file.conf import settings
 from cotidia.file.utils.variation import generate_variation
+
+
+@receiver(pre_save, sender=File)
+def set_order_id(sender, instance, **kwargs):
+    if not instance.order_id:
+        # Set initial order id
+        last_file = File.objects.filter(
+            content_type=instance.content_type,
+            object_id=instance.object_id
+        ).last()
+        instance.order_id = last_file.order_id + 1
 
 
 @receiver(post_save, sender=File)
