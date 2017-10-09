@@ -9,7 +9,7 @@
     {% for file in files %}
     <tr onclick="window.location = '{{file.f.url}}'">
         <td>
-            {% if not file.is_image %}
+            {% if file.is_image %}
                 <img src="{% get_variation_url file 'small' %}"></td>
             {% else %}
                 <span class="fa fa-file"></span>
