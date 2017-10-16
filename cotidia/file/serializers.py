@@ -1,6 +1,8 @@
 import magic
 
 from django.template.defaultfilters import filesizeformat
+from django.core.files.storage import default_storage
+
 from rest_framework import serializers
 
 from cotidia.file.models import File
@@ -25,7 +27,8 @@ class FileSerializer(serializers.ModelSerializer):
             'object_id',
             'taxonomy',
             'created_at',
-            'updated_at'
+            'updated_at',
+            'public'
         ]
         read_only_fields = [
             'uuid',
@@ -35,7 +38,7 @@ class FileSerializer(serializers.ModelSerializer):
             'width',
             'height',
             'created_at',
-            'updated_at'
+            'updated_at',
         ]
 
     def validate_f(self, value):
@@ -55,3 +58,34 @@ class FileSerializer(serializers.ModelSerializer):
             )
 
         return value
+
+    def save(self, **kwargs):
+        # print("INstance", self.validated_data)
+
+        instance = super().save(**kwargs)
+
+        storage = instance.get_storage_class()
+
+        if storage.split(".")[-1] == "S3Boto3Storage":
+
+            bucket = default_storage.bucket
+
+            kwargs = {
+                "Body": instance.f,
+                "Key": instance.f.name,
+            }
+
+            if instance.mimetype == "image/svg+xml":
+                kwargs["ContentType"] = instance.mimetype
+                bucket.put_object(**kwargs)
+
+        return instance
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+
+        if instance.public:
+            instance.f.storage = instance.get_storage()
+            ret["f"] = instance.f.url.split("?")[0]
+
+        return ret

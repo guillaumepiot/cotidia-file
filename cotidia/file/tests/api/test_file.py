@@ -181,6 +181,39 @@ class FileAPITests(APITestCase):
             }
             self.doc.display_section(content)
 
+    def test_upload_file_public(self):
+        """Test if we can upload a file with a public permission for S3."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+
+        url = reverse('file-api:upload')
+
+        pdf_file = generate_pdf_file()
+
+        data = {
+            'f': pdf_file,
+            'public': True
+        }
+
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["name"], "test.pdf")
+        self.assertEqual(response.data["mimetype"], "application/pdf")
+        self.assertEqual(response.data["size"], pdf_file.getbuffer().nbytes)
+
+        if self.display_doc:
+            payload = data.copy()
+            payload['f'] = "test.pdf"
+            content = {
+                'title': "Upload file",
+                'url': url,
+                'http_method': 'POST',
+                'payload': payload,
+                'response': response.data
+            }
+            self.doc.display_section(content)
+
     def test_file_type_validation(self):
         """Test if we get a validation error for invalid file types."""
 

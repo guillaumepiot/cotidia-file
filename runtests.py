@@ -64,6 +64,7 @@ DEFAULT_SETTINGS = dict(
     SECRET_KEY="notasecret",
     AUTH_USER_MODEL="account.User",
     STATIC_URL='/static/',
+    STATIC_ROOT=PACKAGE_ROOT,
     REST_FRAMEWORK={
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.TokenAuthentication',
@@ -76,7 +77,8 @@ DEFAULT_SETTINGS = dict(
             'rest_framework.renderers.JSONRenderer',
         ),
     },
-    FILE_UPLOAD_PATH='test-uploads/'
+    FILE_UPLOAD_PATH='test-uploads/',
+    PUBLIC_FILE_STORAGE='django.core.files.storage.DefaultStorage'
 )
 
 

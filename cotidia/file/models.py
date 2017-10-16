@@ -2,17 +2,19 @@ import uuid
 import magic
 
 from django.db import models
+from django.utils.module_loading import import_string
 from django.core.files.images import get_image_dimensions
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from cotidia.file.conf import settings
 from cotidia.admin.mixins import OrderableMixin
+from cotidia.file.fields import CustomFileField
 
 
 class File(models.Model, OrderableMixin):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    f = models.FileField(upload_to=settings.FILE_UPLOAD_PATH)
+    f = CustomFileField(upload_to=settings.FILE_UPLOAD_PATH)
     name = models.CharField(max_length=255)
     mimetype = models.CharField(max_length=255)
 
@@ -28,6 +30,7 @@ class File(models.Model, OrderableMixin):
     size = models.IntegerField(null=True)
 
     taxonomy = models.CharField(max_length=255, null=True)
+    public = models.BooleanField(default=False)
 
     order_id = models.IntegerField(null=True)
 
@@ -78,3 +81,12 @@ class File(models.Model, OrderableMixin):
     def own_content_type(self):
         content_type = ContentType.objects.get_for_model(self.__class__)
         return content_type
+
+    def get_storage_class(self):
+        if self.public:
+            return settings.PUBLIC_FILE_STORAGE
+        else:
+            return settings.DEFAULT_FILE_STORAGE
+
+    def get_storage(self):
+        return import_string(self.get_storage_class())()

@@ -22,6 +22,7 @@
     this.contentType = input.dataset.contentType
     this.objectId = input.dataset.objectId
     this.taxonomy = input.dataset.taxonomy
+    this.public = input.dataset.public
 
     this.decorateInput()
   }
@@ -222,6 +223,7 @@
 
     this.contentType && data.append('content_type', this.contentType)
     this.taxonomy && data.append('taxonomy', this.taxonomy)
+    this.public && data.append('public', this.public)
     data.append('object_id', this.objectId)
     data.append('f', file)
 
