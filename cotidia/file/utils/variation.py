@@ -15,7 +15,11 @@ def generate_variation(f, variation):
     storage = f.get_storage()
 
     # Open original file in read-only mode
-    fh = storage.open(f.f.name, "rb")
+    try:
+        fh = storage.open(f.f.name, "rb")
+    except FileNotFoundError:
+        return
+
     original_img = Image.open(fh)
 
     # Create a stream to generate the new file to
