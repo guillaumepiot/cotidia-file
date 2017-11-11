@@ -24,7 +24,7 @@ def generate_pdf_file(content="Test PDF."):
     return _file
 
 
-def generate_image_file(file_type="PNG", size=(100, 100)):
+def generate_image_file(file_type="PNG", size=(100, 100), name="test"):
     """Return an image file instance of given type and size.
 
     Accepted file types are: JPEG, PNG, BMP
@@ -36,7 +36,7 @@ def generate_image_file(file_type="PNG", size=(100, 100)):
     _file = io.BytesIO()
     image = Image.new('RGBA', size=size, color=(155, 0, 0))
     image.save(_file, file_type)
-    _file.name = 'test.{0}'.format(file_type)
+    _file.name = '{0}.{1}'.format(name, file_type)
     _file.seek(0)
     return _file
 
