@@ -52,7 +52,7 @@ class File(models.Model, OrderableMixin):
         # @@TODO: move to signal
         if not self.id:
             self.name = self.f.name
-            self.mimetype = magic.from_buffer(self.f.read(), mime=True)
+            self.mimetype = magic.from_buffer(self.f.read(1024), mime=True)
             self.size = self.f.size
             if self.is_image:
                 self.width, self.height = get_image_dimensions(self.f)
