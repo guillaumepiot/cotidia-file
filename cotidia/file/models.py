@@ -83,7 +83,7 @@ class File(models.Model, OrderableMixin):
         return content_type
 
     def get_storage_class(self):
-        if self.public:
+        if self.public and hasattr(settings, "PUBLIC_FILE_STORAGE"):
             return settings.PUBLIC_FILE_STORAGE
         else:
             return settings.DEFAULT_FILE_STORAGE

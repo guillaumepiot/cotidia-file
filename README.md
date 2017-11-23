@@ -81,6 +81,13 @@ FILE_RASTER_IMAGE_FORMATS = [
 ]
 ```
 
+### `PUBLIC_FILE_STORAGE`
+
+Define a django storage class for file upload that should be stored on a
+public container. If the file request passes `public=True` then this storage
+class will be used.
+
+
 ## Commands
 
 ### Generate image variations for all files

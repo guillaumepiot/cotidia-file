@@ -214,6 +214,26 @@ class FileAPITests(APITestCase):
             }
             self.doc.display_section(content)
 
+    def test_upload_file_public_no_public_storage_setup(self):
+        """Test if we can upload public without public storage setup."""
+
+        del settings.PUBLIC_FILE_STORAGE
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+
+        url = reverse('file-api:upload')
+
+        pdf_file = generate_pdf_file()
+
+        data = {
+            'f': pdf_file,
+            'public': True
+        }
+
+        response = self.client.post(url, data, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_file_type_validation(self):
         """Test if we get a validation error for invalid file types."""
 
