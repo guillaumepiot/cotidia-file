@@ -10,7 +10,7 @@ def get_files_for_object(content_type_id, object_id):
     return File.objects.filter(
         content_type__id=content_type_id,
         object_id=object_id
-    )
+    ).order_by('-updated_at')
 
 
 @register.simple_tag
