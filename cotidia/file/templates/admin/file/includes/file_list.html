@@ -7,7 +7,7 @@
         <th>{% trans "Actions" %}</th>
     </tr>
     {% for file in files %}
-    <tr onclick="window.location = '{{file.f.url}}'">
+    <tr onclick="window.location = '{% url 'file-admin:file-detail' file.id %}';">
         <td>
             {% if file.is_image %}
                 <img src="{% get_variation_url file 'small' %}"></td>

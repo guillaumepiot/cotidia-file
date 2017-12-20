@@ -1,4 +1,3 @@
-import uuid
 import magic
 
 from django.db import models
@@ -7,13 +6,13 @@ from django.core.files.images import get_image_dimensions
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+from cotidia.core.models import BaseModel
 from cotidia.file.conf import settings
-from cotidia.admin.mixins import OrderableMixin
+from cotidia.admin.models import AbstractOrderable
 from cotidia.file.fields import CustomFileField
 
 
-class File(models.Model, OrderableMixin):
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+class File(BaseModel, AbstractOrderable):
     f = CustomFileField(upload_to=settings.FILE_UPLOAD_PATH)
     name = models.CharField(max_length=255)
     mimetype = models.CharField(max_length=255)
@@ -31,11 +30,6 @@ class File(models.Model, OrderableMixin):
 
     taxonomy = models.CharField(max_length=255, null=True)
     public = models.BooleanField(default=False)
-
-    order_id = models.IntegerField(null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "File"

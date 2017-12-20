@@ -27,7 +27,7 @@ class FileSerializer(serializers.ModelSerializer):
             'object_id',
             'taxonomy',
             'created_at',
-            'updated_at',
+            'modified_at',
             'public'
         ]
         read_only_fields = [
@@ -38,7 +38,7 @@ class FileSerializer(serializers.ModelSerializer):
             'width',
             'height',
             'created_at',
-            'updated_at',
+            'modified_at',
         ]
 
     def validate_f(self, value):
