@@ -6,6 +6,7 @@ def admin_menu(context):
         {
             "icon": "file",
             "text": "Files",
-            "url": reverse("file-admin:file-list")
+            "url": reverse("file-admin:file-list"),
+            "permissions": ["file.add_file", "file.change_file"],
         }
     ]
