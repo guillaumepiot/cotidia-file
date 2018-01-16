@@ -13,7 +13,7 @@ class Upload(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # Make sure the admin user also has uploading permissions
-        if request.user.is_authenticated() \
+        if request.user.is_authenticated \
                 and not request.user.has_perm("file.add_file"):
             raise PermissionDenied
 
