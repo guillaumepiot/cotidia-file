@@ -1,34 +1,43 @@
-{% load i18n file_tags %}
+{% load i18n file_tags staticfiles %}
 <table class="table table--clickable">
-    <tr>
-        <th>{% trans "Preview" %}</th>
-        <th>{% trans "File name" %}</th>
-        <th>{% trans "Ordering" %}</th>
-        <th>{% trans "Actions" %}</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>{% trans "Preview" %}</th>
+            <th>{% trans "File name" %}</th>
+            <th>{% trans "Ordering" %}</th>
+            <th>{% trans "Actions" %}</th>
+        </tr>
+    </thead>
+    <tbody class="file-list">
     {% for file in files %}
-    <tr onclick="window.location = '{% url 'file-admin:file-detail' file.id %}';">
-        <td>
-            {% if file.is_image %}
-                <img src="{% get_variation_url file 'small' %}"></td>
-            {% else %}
-                <span class="fa fa-file"></span>
-            {% endif %}
-        <td>{{file.f.name}}</td>
-        <td>
-            <form action="{% url 'generic-admin:order' file.own_content_type.id file.id %}" method="post">
-                {% csrf_token %}
-                <button type="input" value="move-up" name="action" class="btn btn--small"{% if forloop.first %} disabled{% endif %} title="Move up">
-                    <span class="fa fa-angle-up fa-lg"></span>
-                </button>
-                <button type="input" value="move-down" name="action" class="btn btn--small"{% if forloop.last %} disabled{% endif %} title="Move down">
-                    <span class="fa fa-angle-down fa-lg"></span>
-                </button>
-            </form>
-        </td>
-        <td>
-            <a href="{% url 'file-admin:file-delete' file.id %}" class="btn btn--delete btn--small">{% trans "Delete" %}</a>
-        </td>
-    </tr>
-{% endfor %}
+        <tr onclick="window.location = '{{file.f.url}}'" class="item" data-id="{{file.uuid}}">
+            <td>
+                {% if file.is_image %}
+                    <img src="{% get_variation_url file 'small' %}"></td>
+                {% else %}
+                    <span class="fa fa-file"></span>
+                {% endif %}
+            <td>{{file.f.name}}</td>
+            <td>
+                {% comment %}
+                <form action="{% url 'generic-admin:order' file.own_content_type.id file.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="input" value="move-up" name="action" class="btn btn--small"{% if forloop.first %} disabled{% endif %} title="Move up">
+                        <span class="fa fa-angle-up fa-lg"></span>
+                    </button>
+                    <button type="input" value="move-down" name="action" class="btn btn--small"{% if forloop.last %} disabled{% endif %} title="Move down">
+                        <span class="fa fa-angle-down fa-lg"></span>
+                    </button>
+                </form>
+                {% endcomment %}
+                <span class="btn btn--small btn--drag"><span class="fa fa-bars"></span></span>
+            </td>
+            <td>
+                <a href="{% url 'file-admin:file-delete' file.id %}" class="btn btn--delete btn--small">{% trans "Delete" %}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
 </table>
+<script src="{% static 'js/Sortable.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/fileSorter.js' %}" type="text/javascript"></script>
