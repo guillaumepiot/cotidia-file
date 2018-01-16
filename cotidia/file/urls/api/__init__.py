@@ -1,5 +1,5 @@
-from .file import url_patterns as file_url_patterns
+from .file import urlpatterns as file_urlpatterns
 
 app_name = 'cotidia.file'
 
-url_patterns = file_url_patterns
+urlpatterns = file_urlpatterns
