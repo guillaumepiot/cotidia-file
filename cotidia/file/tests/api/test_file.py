@@ -20,6 +20,7 @@ from cotidia.file.utils.generator import (
     generate_image_file
 )
 from cotidia.file.models import File
+from cotidia.file.factory import FileFactory
 from cotidia.file.conf import settings
 from cotidia.file.tests.models import GenericItem
 
@@ -474,3 +475,106 @@ class FileAPITests(APITestCase):
                 path = f.build_variation_path(variation)
                 self.assertFalse(Path(path).is_file())
 
+    def test_reorder_files(self):
+        """Test if we can reorder a file list."""
+
+        test_files = [FileFactory() for i in range(5)]
+        uuids = list(map(lambda x: x.uuid, test_files))
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+
+        url = reverse('file-api:reorder')
+
+        # Shuffles the data
+        data = {
+            'data': [uuids[2], uuids[4], uuids[3], uuids[1], uuids[0]]
+        }
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Ensure we have the latest version of the file from the db
+        for f in test_files:
+            f.refresh_from_db()
+
+        # Checks the correct order id has been set
+        self.assertEqual(test_files[2].order_id, 1)
+        self.assertEqual(test_files[4].order_id, 2)
+        self.assertEqual(test_files[3].order_id, 3)
+        self.assertEqual(test_files[1].order_id, 4)
+        self.assertEqual(test_files[0].order_id, 5)
+
+        if self.display_doc:
+            payload = data.copy()
+            payload['f'] = "test.pdf"
+            content = {
+                'title': "Upload file",
+                'url': url,
+                'http_method': 'POST',
+                'payload': payload,
+                'response': response.data
+            }
+            self.doc.display_section(content)
+
+    def test_reorder_files_wrong_uuid(self):
+        """Test if we can reorder a file list."""
+
+        test_files = [FileFactory() for i in range(5)]
+        uuids = list(map(lambda x: x.uuid, test_files))
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+
+        url = reverse('file-api:reorder')
+
+        # Shuffles the data
+        data = {
+            'data': ["ab3e6952-aaaa-aaaa-a726-2579206ee961", uuids[4], uuids[3], uuids[1], uuids[0]]
+        }
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        if self.display_doc:
+            payload = data.copy()
+            payload['f'] = "test.pdf"
+            content = {
+                'title': "Upload file",
+                'url': url,
+                'http_method': 'POST',
+                'payload': payload,
+                'response': response.data
+            }
+            self.doc.display_section(content)
+
+    def test_reorder_files_invalid_uuid(self):
+        """Test if we can reorder a file list."""
+
+        test_files = [FileFactory() for i in range(5)]
+        uuids = list(map(lambda x: x.uuid, test_files))
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+
+        url = reverse('file-api:reorder')
+
+        # Shuffles the data
+        data = {
+            'data': ["ab3e6952-aaa-aaaa-a726-2579206ee961", uuids[4], uuids[3], uuids[1], uuids[0]]
+        }
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        if self.display_doc:
+            payload = data.copy()
+            payload['f'] = "test.pdf"
+            content = {
+                'title': "Upload file",
+                'url': url,
+                'http_method': 'POST',
+                'payload': payload,
+                'response': response.data
+            }
+            self.doc.display_section(content)
