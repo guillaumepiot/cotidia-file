@@ -89,3 +89,10 @@ class FileSerializer(serializers.ModelSerializer):
             ret["f"] = instance.f.url.split("?")[0]
 
         return ret
+
+
+class FileOrderSerializer(serializers.Serializer):
+    data = serializers.ListField(
+        child=serializers.UUIDField()
+    )
+
