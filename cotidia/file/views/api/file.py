@@ -1,7 +1,7 @@
 from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ParseError, NotFound
 from rest_framework.response import Response
 
 from cotidia.file.serializers import FileSerializer
@@ -33,9 +33,11 @@ class Reorder(APIView):
             try:
                 file = File.objects.get(uuid=uuid)
             except File.DoesNotExist:
-                return Response(status=404)
+                raise NotFound(
+                    detail="Could not find a file matching the following uuid %s" % uuid
+                )
             except ValidationError:
-                return Response(status=400)
+                raise ParseError(detail="Invalid UUID", code=400)
             file.order_id = i
             file.save()
         return Response(status=200)
