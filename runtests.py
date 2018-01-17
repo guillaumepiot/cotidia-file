@@ -30,7 +30,7 @@ DEFAULT_SETTINGS = dict(
         "rest_framework",
         "rest_framework.authtoken",
     ],
-    MIDDLEWARE_CLASSES=[
+    MIDDLEWARE=[
         "django.middleware.common.CommonMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
