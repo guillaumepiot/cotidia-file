@@ -25,7 +25,8 @@ class Upload(generics.CreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-class Reorder(APIView):
+class Order(APIView):
+
     def post(self, request):
 
         serializer = FileOrderSerializer(data=request.data)

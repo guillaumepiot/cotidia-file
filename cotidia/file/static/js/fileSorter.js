@@ -47,11 +47,13 @@
       alert('An error has occurred while updating the file order.')
     }
 
-    var data = new FormData()
-
-    data.append('data', result)
+    var data = {
+      'data': result
+    }
 
     xhr.open('POST', this.uploadUrl)
+
+    this.headers['Content-Type'] = 'application/json'
 
     if (this.headers) {
       Object.keys(this.headers).forEach(function (header) {
@@ -59,7 +61,7 @@
       })
     }
 
-    xhr.send(data)
+    xhr.send(JSON.stringify(data))
   }
 
   /////////////////////////////////////////////////////////////////////////////
