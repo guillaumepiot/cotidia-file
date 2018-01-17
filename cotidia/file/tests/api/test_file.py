@@ -484,7 +484,7 @@ class FileAPITests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
 
-        url = reverse('file-api:reorder')
+        url = reverse('file-api:order')
 
         # Shuffles the data
         data = {
@@ -526,7 +526,7 @@ class FileAPITests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
 
-        url = reverse('file-api:reorder')
+        url = reverse('file-api:order')
 
         # Shuffles the data
         data = {
@@ -557,7 +557,7 @@ class FileAPITests(APITestCase):
         self.client.credentials(
             HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
 
-        url = reverse('file-api:reorder')
+        url = reverse('file-api:order')
 
         # Shuffles the data
         data = {

@@ -15,5 +15,5 @@ urlpatterns = [
     url(
         r'^reorder$',
         Reorder.as_view(),
-        name="reorder"),
+        name="order"),
 ]
