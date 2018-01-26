@@ -42,8 +42,9 @@
 
     newButton.addEventListener('click', this.triggerFileInput.bind(this))
 
-    // Hide original input
+    // Hide original input and remove its name attribute so that its files don't actually upload on submit
     this.input.style.display = 'none'
+    this.input.name = ''
 
     this.parent.appendChild(newButton)
 
