@@ -43,7 +43,6 @@
     newButton.addEventListener('click', this.triggerFileInput.bind(this))
 
     // Hide original input
-    // TODO??
     this.input.style.display = 'none'
 
     this.parent.appendChild(newButton)
@@ -67,14 +66,12 @@
   FileUploader.prototype.handleFiles = function () {
     var files = this.input.files
 
-    // debugger
-
     if (files && files.length) {
       for (var i = 0; i < files.length; i++) {
         this.queueFile(files[i])
       }
 
-      this.processQueue()
+      this.processNextQueueItem()
     }
   }
 
@@ -82,6 +79,10 @@
     // Create progress item in HTML and store reference in this.queue
     var upload = document.createElement('div')
     upload.classList.add('upload')
+
+    var message = document.createElement('div')
+    message.classList.add('alert')
+    message.classList.add('hidden')
 
     var header = document.createElement('div')
     header.classList.add('upload__header')
@@ -112,6 +113,7 @@
 
     progress.appendChild(bar)
 
+    upload.appendChild(message)
     upload.appendChild(header)
     upload.appendChild(progress)
 
@@ -120,6 +122,7 @@
     this.queue[file.name] = {
       dom: {
         upload: upload,
+        message: message,
         actions: actions,
         actionsIcon: actionsIcon,
         progress: progress,
@@ -128,6 +131,7 @@
       file: file,
       state: 'queued',
       percent: 0,
+      extra: null,
     }
 
     this.updateDOM(file)
@@ -142,31 +146,54 @@
     item.dom.upload.classList.remove('upload--error')
     item.dom.upload.classList.add('upload--' + item.state)
 
-    if (item.state === 'uploaded') {
+    if (item.state === 'complete') {
       item.dom.actionsIcon.classList.remove('fa-times')
       item.dom.actionsIcon.classList.remove('fa-refresh')
       item.dom.actionsIcon.classList.remove('fa-spin')
       item.dom.actionsIcon.classList.add('fa-check')
+
+      item.dom.message.classList.remove('alert--warning')
+      item.dom.message.classList.remove('alert--error')
+      item.dom.message.classList.add('alert--success')
     } else if (item.state === 'error') {
       item.dom.actionsIcon.classList.remove('fa-check')
       item.dom.actionsIcon.classList.remove('fa-refresh')
       item.dom.actionsIcon.classList.remove('fa-spin')
       item.dom.actionsIcon.classList.add('fa-times')
+
+      item.dom.message.classList.remove('alert--success')
+      item.dom.message.classList.remove('alert--warning')
+      item.dom.message.classList.add('alert--error')
     } else {
       item.dom.actionsIcon.classList.remove('fa-times')
       item.dom.actionsIcon.classList.remove('fa-check')
       item.dom.actionsIcon.classList.add('fa-refresh')
       item.dom.actionsIcon.classList.add('fa-spin')
 
+      item.dom.message.classList.remove('alert--success')
+      item.dom.message.classList.remove('alert--error')
+      item.dom.message.classList.add('alert--warning')
+
       item.dom.bar.style.width = item.percent + '%'
+    }
+
+    if (item.extra) {
+      item.dom.message.classList.remove('hidden')
+      item.dom.message.innerHTML = item.extra
+    } else {
+      item.dom.message.classList.add('hidden')
     }
   }
 
-  FileUploader.prototype.updateState = function (file, state, percent) {
+  FileUploader.prototype.updateState = function (file, state, percent, extra) {
       this.queue[file.name].state = state
 
       if (percent) {
         this.queue[file.name].percent = percent
+      }
+
+      if (extra) {
+        this.queue[file.name].extra = extra
       }
 
       this.updateDOM(file)
@@ -177,11 +204,13 @@
       this.updateDOM(file)
   }
 
-  FileUploader.prototype.processQueue = function () {
+  FileUploader.prototype.processNextQueueItem = function () {
+    // If at least one file is already uploading, we don't need to do anything.
     if (Object.values(this.queue).some(function (item) { return item.state === 'uploading' })) {
       return
     }
 
+    // Pick the next file to upload and process it.
     var file = Object.values(this.queue).find(function (item) { return item.state === 'queued' })
 
     if (file) {
@@ -198,19 +227,29 @@
 
     xhr.onload = function () {
       if (xhr.status >= 200 && xhr.status < 300) {
-        self.updateState(file, 'uploaded', 100)
+        self.updateState(file, 'complete', 100)
       } else {
-        self.updateState(file, 'error', 100)
+        var extra = 'There was an issue uploading the file.'
+
+        // If it's a 400 response, there's probably some JSON error message data.
+        if (xhr.status === 400) {
+          try {
+            var json = JSON.parse(xhr.responseText)
+            extra = json.f.reduce(function (acc, item) { return acc + ' ' + item }, '')
+          } catch (e) {}
+        }
+
+        self.updateState(file, 'error', 100, extra)
       }
 
-      self.processQueue()
+      self.processNextQueueItem()
     }
 
     xhr.onerror = function () {
-      console.error('Error uploading ' + file.name)
+      console.error('Network error while uploading ' + file.name)
 
-      self.updateState(file, 'error', 100)
-      self.processQueue()
+      self.updateState(file, 'error', 100, 'There was an issue uploading the file.')
+      self.processNextQueueItem()
     }
 
     xhr.upload.onprogress = function (e) {
