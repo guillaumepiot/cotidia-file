@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import path
 
 from cotidia.file.views.admin.file import (
     FileList,
@@ -6,19 +6,17 @@ from cotidia.file.views.admin.file import (
     FileDelete
 )
 
-app_name = 'cotidia.file'
-
 urlpatterns = [
-    url(
-        r'^$',
+    path(
+        '',
         FileList.as_view(),
         name='file-list'),
-    url(
-        r'^(?P<pk>[\d]+)$',
+    path(
+        '<pk>',
         FileDetail.as_view(),
         name='file-detail'),
-    url(
-        r'^(?P<pk>[\d]+)/delete$',
+    path(
+        '<pk>/delete',
         FileDelete.as_view(),
         name='file-delete'),
 ]
