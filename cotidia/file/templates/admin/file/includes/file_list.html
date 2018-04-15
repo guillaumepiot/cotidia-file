@@ -19,17 +19,6 @@
                 {% endif %}
             <td>{{file.f.name}}</td>
             <td>
-                {% comment %}
-                <form action="{% url 'generic-admin:order' file.own_content_type.id file.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="input" value="move-up" name="action" class="btn btn--small"{% if forloop.first %} disabled{% endif %} title="Move up">
-                        <span class="fa fa-angle-up fa-lg"></span>
-                    </button>
-                    <button type="input" value="move-down" name="action" class="btn btn--small"{% if forloop.last %} disabled{% endif %} title="Move down">
-                        <span class="fa fa-angle-down fa-lg"></span>
-                    </button>
-                </form>
-                {% endcomment %}
                 <span class="btn btn--small btn--drag"><span class="fa fa-bars"></span></span>
             </td>
             <td>

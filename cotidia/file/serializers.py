@@ -60,8 +60,6 @@ class FileSerializer(serializers.ModelSerializer):
         return value
 
     def save(self, **kwargs):
-        # print("INstance", self.validated_data)
-
         instance = super().save(**kwargs)
 
         storage = instance.get_storage_class()
