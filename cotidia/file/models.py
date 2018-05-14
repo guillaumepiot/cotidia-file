@@ -10,10 +10,11 @@ from cotidia.core.models import BaseModel
 from cotidia.file.conf import settings
 from cotidia.admin.models import AbstractOrderable
 from cotidia.file.fields import CustomFileField
+from cotidia.file.utils.filename import get_file_path
 
 
 class File(BaseModel, AbstractOrderable):
-    f = CustomFileField(upload_to=settings.FILE_UPLOAD_PATH)
+    f = CustomFileField(upload_to=get_file_path)
     name = models.CharField(max_length=255)
     mimetype = models.CharField(max_length=255)
 

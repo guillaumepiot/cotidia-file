@@ -20,5 +20,7 @@ class FileConf(AppConf):
         "image/png",
     ]
 
+    ENCRYPT_FILENAME = False
+
     class Meta:
         prefix = 'file'
