@@ -1,10 +1,12 @@
+{% spaceless %}
 <fieldset>
     <legend>Preview</legend>
     <a href="{{object.f.url}}">
         {% if object.is_image %}
-            <img src="{{object.f.url}}" style="max-width: 100%;">
+            <img src="{{object.f.url}}" style="max-width: 100%; margin-bottom: -7px;">
         {% else %}
             {{object.f.url}}
         {% endif %}
     </a>
 </fieldset>
+{% endspaceless %}

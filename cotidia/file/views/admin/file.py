@@ -1,3 +1,8 @@
+import uuid
+import django_filters
+
+from django.db.models import Q
+
 from cotidia.admin.views import (
     AdminListView,
     AdminDetailView,
@@ -7,12 +12,39 @@ from cotidia.admin.views import (
 from cotidia.file.models import File
 
 
+class FileFilter(django_filters.FilterSet):
+    name = django_filters.CharFilter(
+        label="Search",
+        method="search"
+    )
+
+    class Meta:
+        model = File
+        fields = ['name']
+
+    def search(self, queryset, name, value):
+
+        q_objects = Q(name__icontains=value) | \
+            Q(taxonomy__icontains=value)
+
+        try:
+            val = uuid.UUID(value, version=4)
+            q_objects |= Q(uuid=val)
+        except ValueError:
+            pass
+
+        return queryset.filter(q_objects)
+
+
 class FileList(AdminListView):
     columns = (
         ('Name', 'name'),
         ('Date Created', 'created_at'),
     )
     model = File
+    row_actions = ['view', 'delete']
+    row_click_action = 'detail'
+    filterset = FileFilter
 
 
 class FileDetail(AdminDetailView):
