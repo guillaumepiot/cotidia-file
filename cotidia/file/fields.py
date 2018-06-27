@@ -13,6 +13,7 @@ class CustomFieldFile(FieldFile):
         if self.instance.public:
             if hasattr(settings, "PUBLIC_FILE_STORAGE"):
                 self.storage = import_string(settings.PUBLIC_FILE_STORAGE)()
+                self.storage.querystring_auth = False
             else:
                 # We assume we are using the Django default file storage
                 # Set the permissions to 0o644
