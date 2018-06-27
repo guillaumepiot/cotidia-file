@@ -79,15 +79,6 @@ class FileSerializer(serializers.ModelSerializer):
 
         return instance
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-
-        if instance.public:
-            instance.f.storage = instance.get_storage()
-            ret["f"] = instance.f.url.split("?")[0]
-
-        return ret
-
 
 class FileOrderSerializer(serializers.Serializer):
     data = serializers.ListField(

@@ -9,17 +9,25 @@ logger = logging.getLogger(__name__)
 
 
 class CustomFieldFile(FieldFile):
+
     def save(self, name, content, save=True):
         if self.instance.public:
             if hasattr(settings, "PUBLIC_FILE_STORAGE"):
                 self.storage = import_string(settings.PUBLIC_FILE_STORAGE)()
-                self.storage.querystring_auth = False
             else:
                 # We assume we are using the Django default file storage
                 # Set the permissions to 0o644
                 self.storage._file_permissions_mode = 0o644
                 logger.warning("PUBLIC_FILE_STORAGE not set.")
+
         super().save(name, content, save=save)
+
+    @property
+    def url(self):
+        if self.instance.public:
+            # Don't print query string if the file is public
+            self.storage.querystring_auth = False
+        return super().url
 
 
 class CustomFileField(FileField):
