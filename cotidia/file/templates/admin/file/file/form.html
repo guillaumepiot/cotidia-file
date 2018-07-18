@@ -1,0 +1,80 @@
+{% extends "admin/page.html" %}{% load i18n admin_toolbar_tags admin_list_tags %}
+
+{% block header_scripts %}
+    {{block.super}}
+    {{ form.media.css }}
+{% endblock header_scripts %}
+
+{% block title %}
+    {% if object %}
+        {% blocktrans with verbose_name as verbose_name %}
+            Edit {{verbose_name}}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with verbose_name as verbose_name %}
+            Add {{verbose_name}}
+        {% endblocktrans %}
+    {% endif %}
+{% endblock title %}
+
+{% block body_class %}
+    {% if template_type == "centered" %}content-centered{% endif %}
+{% endblock body_class %}
+
+{% block toolbar_title %}
+    <a href="{% get_admin_url app_label model_name 'list' %}">{{verbose_name_plural}}</a>
+    &nbsp;<span class="fa fa-angle-right"></span>&nbsp;
+    {% if object %}
+        <a href="{% get_admin_url app_label model_name 'detail' object %}">{{object}}</a>
+        &nbsp;<span class="fa fa-angle-right"></span>&nbsp;
+        {% blocktrans with verbose_name as verbose_name %}
+            Edit {{verbose_name}}
+        {% endblocktrans %}
+    {% else %}
+        {% blocktrans with verbose_name as verbose_name %}
+            Add {{verbose_name}}
+        {% endblocktrans %}
+    {% endif %}
+{% endblock toolbar_title %}
+
+
+{% block page_content %}
+{% include "admin/generic/form/non_field_errors.html" %}
+{% include "admin/generic/form/errors.html" %}
+
+{% with object as object %}
+{% include "admin/file/file/preview.html" %}
+{% endwith %}
+<form action="" method="post" class="form form--animate" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {% with fieldset_template_name="admin/generic/form/fieldset_as_div.html" field_template_name="admin/generic/form/field_as_div.html" %}
+        {% for elm in form %}
+            {% if elm.is_fieldset %}
+                {% include fieldset_template_name with fieldset=elm %}
+            {% else %}
+                <div class="form__row">
+                    {% include field_template_name with field=elm %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endwith %}
+    {% block form_actions %}
+    <div class="form__actions">
+        <div class="form__actions-inner">
+            <button type="submit" class="btn btn--primary">
+                {% trans "Save" %}
+            </button>
+            <a href="{% get_admin_url app_label model_name 'list' %}" class="btn btn--cancel pull-right">
+                {% trans "Cancel" %}
+            </a>
+        </div>
+    </div>
+    {% endblock form_actions %}
+</form>
+{% endblock page_content %}
+
+{% block footer_scripts %}
+{{block.super}}
+{{ form.media.js }}
+{% endblock footer_scripts %}
