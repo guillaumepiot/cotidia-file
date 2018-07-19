@@ -31,6 +31,8 @@ class File(BaseModel, AbstractOrderable):
 
     taxonomy = models.CharField(max_length=255, null=True)
     public = models.BooleanField(default=False)
+    alt_tags = models.CharField(max_length=400, null=True)
+    title = models.CharField(max_length=400, null=True)
 
     class Meta:
         verbose_name = "File"
