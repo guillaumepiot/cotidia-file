@@ -125,7 +125,6 @@
         upload: upload,
         message: message,
         actions: actions,
-        actionsIcon: actionsIcon,
         progress: progress,
         bar: bar,
       },
@@ -141,6 +140,11 @@
   FileUploader.prototype.updateDOM = function (file) {
     var item = this.queue[file.name]
 
+    var actionsIcon = document.createElement('i')
+    actionsIcon.classList.add('upload-action__icon')
+    actionsIcon.classList.add('fa')
+    actionsIcon.classList.add('fa-fw')
+
     item.dom.upload.classList.remove('upload--queued')
     item.dom.upload.classList.remove('upload--uploading')
     item.dom.upload.classList.remove('upload--complete')
@@ -148,28 +152,20 @@
     item.dom.upload.classList.add('upload--' + item.state)
 
     if (item.state === 'complete') {
-      item.dom.actionsIcon.classList.remove('fa-times')
-      item.dom.actionsIcon.classList.remove('fa-refresh')
-      item.dom.actionsIcon.classList.remove('fa-spin')
-      item.dom.actionsIcon.classList.add('fa-check')
+      actionsIcon.classList.add('fa-check')
 
       item.dom.message.classList.remove('alert--warning')
       item.dom.message.classList.remove('alert--error')
       item.dom.message.classList.add('alert--success')
     } else if (item.state === 'error') {
-      item.dom.actionsIcon.classList.remove('fa-check')
-      item.dom.actionsIcon.classList.remove('fa-refresh')
-      item.dom.actionsIcon.classList.remove('fa-spin')
-      item.dom.actionsIcon.classList.add('fa-times')
+      actionsIcon.classList.add('fa-times')
 
       item.dom.message.classList.remove('alert--success')
       item.dom.message.classList.remove('alert--warning')
       item.dom.message.classList.add('alert--error')
     } else {
-      item.dom.actionsIcon.classList.remove('fa-times')
-      item.dom.actionsIcon.classList.remove('fa-check')
-      item.dom.actionsIcon.classList.add('fa-refresh')
-      item.dom.actionsIcon.classList.add('fa-spin')
+      actionsIcon.classList.add('fa-spinner')
+      actionsIcon.classList.add('fa-pulse')
 
       item.dom.message.classList.remove('alert--success')
       item.dom.message.classList.remove('alert--error')
@@ -177,6 +173,9 @@
 
       item.dom.bar.style.width = item.percent + '%'
     }
+
+    item.dom.actions.innerHTML = ''
+    item.dom.actions.appendChild(actionsIcon)
 
     if (item.extra) {
       item.dom.message.classList.remove('hidden')
