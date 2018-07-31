@@ -25,14 +25,14 @@ class CustomFieldFile(FieldFile):
     @property
     def url(self):
 
-        if self.instance.public:
+        if self.instance.public and hasattr(self.storage, 'querystring_auth'):
             querystring_auth = self.storage.querystring_auth
             # Don't print query string if the file is public
             self.storage.querystring_auth = False
 
         url = super().url
 
-        if self.instance.public:
+        if self.instance.public and hasattr(self.storage, 'querystring_auth'):
             self.storage.querystring_auth = querystring_auth
 
         return url
