@@ -44,6 +44,7 @@ class FileList(AdminListView):
         ('Date Created', 'created_at'),
     )
     model = File
+    add_view = False
     row_actions = ['view', 'update', 'delete']
     row_click_action = 'detail'
     filterset = FileFilter
