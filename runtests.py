@@ -58,6 +58,7 @@ DEFAULT_SETTINGS = dict(
         }
     },
     SITE_ID=1,
+    SITE_NAME="localhost",
     SITE_URL="http://localhost:8000",
     APP_URL="http://localhost:8000",
     ROOT_URLCONF="cotidia.file.tests.urls",
