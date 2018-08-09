@@ -4,3 +4,6 @@ build/
 dist/
 *.egg-info/
 *.idea/
+venv/
+.vscode/
+*.swp
