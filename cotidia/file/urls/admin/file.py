@@ -6,7 +6,7 @@ from cotidia.file.views.admin.file import (
     FileDelete,
     FileUpdate
 )
-app_name = "cotidia.file"
+# app_name = "cotidia.file"
 urlpatterns = [
     path(
         '',

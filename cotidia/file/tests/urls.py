@@ -8,7 +8,7 @@ urlpatterns = [
         namespace="file-api")),
     url(r'^api/file/upload-public$', PublicUpload.as_view(),
         name="file-upload-public"),
-    url(r'^admin/file/', include('cotidia.file.urls.admin.file',
+    url(r'^admin/file/', include('cotidia.file.urls.admin',
         namespace="file-admin")),
     url(r'^admin/account/', include('cotidia.account.urls.admin',
         namespace="account-admin")),
