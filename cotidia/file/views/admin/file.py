@@ -49,6 +49,9 @@ class FileList(AdminListView):
     row_click_action = 'detail'
     filterset = FileFilter
 
+    def get_queryset(self):
+        return super().get_queryset().order_by('-created_at')
+
 
 class FileDetail(AdminDetailView):
     model = File
