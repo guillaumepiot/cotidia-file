@@ -76,10 +76,16 @@ class FileDetail(AdminDetailView):
                         "field": "f.url",
                     },
                 ],
-                {
-                    "label": "MIME type",
-                    "field": "mimetype",
-                },
+                [
+                    {
+                        "label": "MIME type",
+                        "field": "mimetype",
+                    },
+                    {
+                        "label": "Public",
+                        "field": "public",
+                    },
+                ],
                 {
                     "label": "Title",
                     "field": "title",

@@ -7,11 +7,12 @@ class FileAddForm(BetterModelForm):
 
     class Meta:
         model = File
-        fields = ['f', 'title', 'alt_tags']
+        fields = ['f', 'public', 'title', 'alt_tags']
         fieldsets = (
             ('upload', {
                 'fields': (
-                    "f",
+                    'f',
+                    'public'
                 ),
                 'legend': 'Upload'
             }),
