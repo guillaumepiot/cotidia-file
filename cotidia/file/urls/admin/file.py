@@ -3,6 +3,7 @@ from django.urls import path
 from cotidia.file.views.admin.file import (
     FileList,
     FileDetail,
+    FileCreate,
     FileDelete,
     FileUpdate
 )
@@ -12,6 +13,10 @@ urlpatterns = [
         '',
         FileList.as_view(),
         name='file-list'),
+    path(
+        'add',
+        FileCreate.as_view(),
+        name='file-add'),
     path(
         '<pk>',
         FileDetail.as_view(),

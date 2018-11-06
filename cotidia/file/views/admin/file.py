@@ -1,12 +1,13 @@
 import uuid
 import django_filters
 from cotidia.file.models import File
-from cotidia.file.forms import FileUpdateForm
+from cotidia.file.forms import FileAddForm, FileUpdateForm
 from django.db.models import Q
 
 from cotidia.admin.views import (
     AdminListView,
     AdminDetailView,
+    AdminCreateView,
     AdminDeleteView,
     AdminUpdateView
 )
@@ -44,7 +45,6 @@ class FileList(AdminListView):
         ('Date Created', 'created_at'),
     )
     model = File
-    add_view = False
     row_actions = ['view', 'update', 'delete']
     row_click_action = 'detail'
     filterset = FileFilter
@@ -66,10 +66,16 @@ class FileDetail(AdminDetailView):
                         "field": "f",
                     },
                 ],
-                {
-                    "label": "Date Created",
-                    "field": "created_at",
-                },
+                [
+                    {
+                        "label": "Date Created",
+                        "field": "created_at",
+                    },
+                    {
+                        "label": "File url",
+                        "field": "f.url",
+                    },
+                ],
                 {
                     "label": "MIME type",
                     "field": "mimetype",
@@ -106,10 +112,14 @@ class FileDetail(AdminDetailView):
     ]
 
 
-class FileUpdate(AdminUpdateView):
-    template_name = "admin/file/file/update.html"
-    form_class = FileUpdateForm
+class FileCreate(AdminCreateView):
     model = File
+    form_class = FileAddForm
+
+
+class FileUpdate(AdminUpdateView):
+    model = File
+    form_class = FileUpdateForm
 
 
 class FileDelete(AdminDeleteView):
