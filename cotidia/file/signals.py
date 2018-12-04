@@ -23,6 +23,8 @@ def set_order_id(sender, instance, **kwargs):
 @receiver(post_save, sender=File)
 def handle_image_variations(sender, instance, created, **kwargs):
     if created:
+        print('file created')
         if instance.is_raster_image and settings.FILE_IMAGE_VARIATIONS:
             for variation in settings.FILE_IMAGE_VARIATIONS.keys():
+                print('generate variation', variation)
                 generate_variation(instance, variation)
