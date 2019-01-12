@@ -10,10 +10,13 @@ from cotidia.file.utils.variation import generate_variation
 def set_order_id(sender, instance, **kwargs):
     if not instance.order_id:
         # Set initial order id
-        last_file = File.objects.filter(
-            content_type=instance.content_type,
-            object_id=instance.object_id
-        ).exclude(order_id=None).last()
+        last_file = (
+            File.objects.filter(
+                content_type=instance.content_type, object_id=instance.object_id
+            )
+            .exclude(order_id=None)
+            .last()
+        )
         if last_file:
             instance.order_id = last_file.order_id + 1
         else:
@@ -23,8 +26,6 @@ def set_order_id(sender, instance, **kwargs):
 @receiver(post_save, sender=File)
 def handle_image_variations(sender, instance, created, **kwargs):
     if created:
-        print('file created')
         if instance.is_raster_image and settings.FILE_IMAGE_VARIATIONS:
             for variation in settings.FILE_IMAGE_VARIATIONS.keys():
-                print('generate variation', variation)
                 generate_variation(instance, variation)
