@@ -44,8 +44,8 @@ class FileUpdateForm(BetterModelForm):
             }),
             ('info', {
                 'fields': (
-                    "title",
                     "alt_tags",
+                    "title",
                 ),
                 'legend': 'File details'
             }),
