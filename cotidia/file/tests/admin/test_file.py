@@ -13,7 +13,6 @@ from cotidia.file.conf import settings
 
 
 class FileAdminTests(TestCase):
-
     def setUp(self):
 
         # Create a default object, to use with update, retrieve, list & delete
@@ -23,38 +22,32 @@ class FileAdminTests(TestCase):
             username="admin.permitted",
             email="admin.permitted@test.com",
             is_active=True,
-            is_staff=True)
+            is_staff=True,
+        )
         self.admin_user_permitted.set_password("demo1234")
         self.admin_user_permitted.save()
 
         content_type = ContentType.objects.get_for_model(File)
         permission = Permission.objects.get(
-            content_type=content_type, codename='delete_file')
+            content_type=content_type, codename="delete_file"
+        )
         self.admin_user_permitted.user_permissions.add(permission)
 
         # Create the client and login the user
         self.c = Client()
-        self.c.login(
-            email=self.admin_user_permitted.email,
-            password="demo1234")
+        self.c.login(email=self.admin_user_permitted.email, password="demo1234")
 
     def tearDown(self):
         shutil.rmtree(
             os.path.join(
-                os.path.dirname(__file__),
-                '../../../../%s' % settings.FILE_UPLOAD_PATH
+                os.path.dirname(__file__), "../../../../%s" % settings.FILE_UPLOAD_PATH
             )
         )
 
     def test_delete_file(self):
         """Test that we can delete an object."""
 
-        url = reverse(
-            'file-admin:file-delete',
-            kwargs={
-                'pk': self.object.id
-            }
-        )
+        url = reverse("file-admin:file-delete", kwargs={"pk": self.object.id})
 
         # Test that the page load first
         response = self.c.get(url)

@@ -7,16 +7,20 @@ from django.core.files.base import ContentFile
 from cotidia.file.conf import settings
 
 
-def generate_variation(f, variation):
+def generate_variation(f, variation, uploaded_file=None):
     action = settings.FILE_IMAGE_VARIATIONS[variation][0]
     size = settings.FILE_IMAGE_VARIATIONS[variation][1:3]
     file_type = f.mimetype.replace("image/", "")
 
     storage = f.get_storage()
 
+    # Open submitted file or use default
+    if not uploaded_file:
+        uploaded_file = f.f
+
     # Open original file in read-only mode
     try:
-        fh = storage.open(f.f.name, "rb")
+        fh = storage.open(uploaded_file.name, "rb")
     except FileNotFoundError:
         return
 
@@ -37,7 +41,7 @@ def generate_variation(f, variation):
                 round(half_the_width - (size[0] / 2)),
                 round(half_the_height - (size[1] / 2)),
                 round(half_the_width + (size[0] / 2)),
-                round(half_the_height + (size[1] / 2))
+                round(half_the_height + (size[1] / 2)),
             )
         )
         original_img.thumbnail(size)

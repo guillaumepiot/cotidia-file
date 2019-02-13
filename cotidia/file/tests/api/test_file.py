@@ -17,7 +17,7 @@ from cotidia.core.utils.doc import Doc
 from cotidia.file.utils.generator import (
     generate_pdf_file,
     generate_text_file,
-    generate_image_file
+    generate_image_file,
 )
 from cotidia.file.models import File
 from cotidia.file.factory import FileFactory
@@ -40,31 +40,33 @@ class FileAPITests(APITestCase):
         self.item = GenericItem.objects.create()
 
         self.normal_user = User.objects.create(
-            username="normal",
-            email="normal@test.com",
-            is_active=True)
+            username="normal", email="normal@test.com", is_active=True
+        )
         self.normal_user_token, created = Token.objects.get_or_create(
-            user=self.normal_user)
+            user=self.normal_user
+        )
 
         self.admin_user = User.objects.create(
-            username="admin",
-            email="admin@test.com",
-            is_active=True,
-            is_staff=True)
+            username="admin", email="admin@test.com", is_active=True, is_staff=True
+        )
         self.admin_user_token, created = Token.objects.get_or_create(
-            user=self.admin_user)
+            user=self.admin_user
+        )
 
         self.admin_user_permitted = User.objects.create(
             username="admin.permitted",
             email="admin.permitted@test.com",
             is_active=True,
-            is_staff=True)
+            is_staff=True,
+        )
         self.admin_user_permitted_token, created = Token.objects.get_or_create(
-            user=self.admin_user_permitted)
+            user=self.admin_user_permitted
+        )
 
         content_type = ContentType.objects.get_for_model(File)
         permission = Permission.objects.get(
-            content_type=content_type, codename='add_file')
+            content_type=content_type, codename="add_file"
+        )
         self.admin_user_permitted.user_permissions.add(permission)
 
     def tearDown(self):
@@ -74,61 +76,57 @@ class FileAPITests(APITestCase):
     def test_upload_file_permission_restricted(self):
         """Test that a user without the necessary permissions is restricted."""
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
 
-        data = {
-            'f': pdf_file
-        }
+        data = {"f": pdf_file}
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key)
+            HTTP_AUTHORIZATION="Token " + self.normal_user_token.key
+        )
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_token.key)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.admin_user_token.key)
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_upload_file_permission_user_permitted(self):
         """Test that an admin user with the right permission can upload."""
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
 
-        data = {
-            'f': pdf_file
-        }
+        data = {"f": pdf_file}
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_upload_file(self):
         """Test if we can upload a file."""
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
 
-        data = {
-            'f': pdf_file
-        }
+        data = {"f": pdf_file}
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["mimetype"], "application/pdf")
@@ -136,13 +134,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -150,20 +148,21 @@ class FileAPITests(APITestCase):
         """Test if we can upload a file with content type."""
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
         content_type_id = ContentType.objects.get_for_model(self.item).id
 
         data = {
-            'f': pdf_file,
-            'content_type': content_type_id,
-            'object_id': self.item.id
+            "f": pdf_file,
+            "content_type": content_type_id,
+            "object_id": self.item.id,
         }
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["mimetype"], "application/pdf")
@@ -172,13 +171,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file with generic relation",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file with generic relation",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -186,18 +185,16 @@ class FileAPITests(APITestCase):
         """Test if we can upload a file with a public permission for S3."""
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
 
-        data = {
-            'f': pdf_file,
-            'public': True
-        }
+        data = {"f": pdf_file, "public": True}
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["mimetype"], "application/pdf")
@@ -205,13 +202,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -221,87 +218,78 @@ class FileAPITests(APITestCase):
         del settings.PUBLIC_FILE_STORAGE
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
 
-        data = {
-            'f': pdf_file,
-            'public': True
-        }
+        data = {"f": pdf_file, "public": True}
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_file_type_validation(self):
         """Test if we get a validation error for invalid file types."""
 
-        with self.settings(FILE_ALLOWED_TYPES=['application/pdf']):
+        with self.settings(FILE_ALLOWED_TYPES=["application/pdf"]):
 
             self.client.credentials(
-                HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key
+                HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
             )
 
-            url = reverse('file-api:upload')
+            url = reverse("file-api:upload")
 
             text_file = generate_text_file()
 
-            data = {
-                'f': text_file
-            }
+            data = {"f": text_file}
 
-            response = self.client.post(url, data, format='multipart')
+            response = self.client.post(url, data, format="multipart")
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            self.assertEqual(
-                response.data['f'],
-                ['File type (text/plain) is invalid.']
-            )
+            self.assertEqual(response.data["f"], ["File type (text/plain) is invalid."])
 
     def test_file_filesize_validation(self):
         """Test if we get a validation error for large files."""
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         # Make a larger image so it exceeds the file size limit on purpose
         pdf_file = generate_pdf_file(content="Some text " * 5000)
 
-        data = {
-            'f': pdf_file
-        }
+        data = {"f": pdf_file}
 
         max_upload_size_fmt = filesizeformat(settings.FILE_MAX_UPLOAD_SIZE)
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(
-            response.data['f'],
+            response.data["f"],
             [
-                'File size too large. It must be less than {}'.format(
-                    max_upload_size_fmt)
-            ]
+                "File size too large. It must be less than {}".format(
+                    max_upload_size_fmt
+                )
+            ],
         )
 
     def test_upload_file_with_taxonomy(self):
         """Test if we can upload a file with taxonomy."""
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
 
-        data = {
-            'f': pdf_file,
-            'taxonomy': "gallery"
-        }
+        data = {"f": pdf_file, "taxonomy": "gallery"}
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["taxonomy"], "gallery")
@@ -309,13 +297,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file with taxonomy",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file with taxonomy",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -323,21 +311,22 @@ class FileAPITests(APITestCase):
         """Test if we can upload a file with content type and taxonomy."""
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:upload')
+        url = reverse("file-api:upload")
 
         pdf_file = generate_pdf_file()
         content_type_id = ContentType.objects.get_for_model(self.item).id
 
         data = {
-            'f': pdf_file,
-            'content_type': content_type_id,
-            'object_id': self.item.id,
-            'taxonomy': "floorplan"
+            "f": pdf_file,
+            "content_type": content_type_id,
+            "object_id": self.item.id,
+            "taxonomy": "floorplan",
         }
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["taxonomy"], "floorplan")
@@ -347,13 +336,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file with generic relation and taxonomy",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file with generic relation and taxonomy",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -364,20 +353,17 @@ class FileAPITests(APITestCase):
         """
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-upload-public')
+        url = reverse("file-upload-public")
 
         pdf_file = generate_pdf_file()
         content_type_id = ContentType.objects.get_for_model(self.item).id
 
-        data = {
-            'f': pdf_file,
-            'object_id': self.item.id,
-            'taxonomy': "floorplan"
-        }
+        data = {"f": pdf_file, "object_id": self.item.id, "taxonomy": "floorplan"}
 
-        response = self.client.post(url, data, format='multipart')
+        response = self.client.post(url, data, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["name"], "test.pdf")
         self.assertEqual(response.data["taxonomy"], "floorplan")
@@ -387,46 +373,38 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file without permission required",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file without permission required",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
     def test_upload_file_with_image_variations(self):
         """Test if we can upload a file with image variations."""
 
-        variations = {
-            "thumbnail": ["crop", 75, 75],
-            "small": ["resize", 50, 50]
-        }
+        variations = {"thumbnail": ["crop", 75, 75], "small": ["resize", 50, 50]}
 
         with self.settings(FILE_IMAGE_VARIATIONS=variations):
 
             self.client.credentials(
-                HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key
+                HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
             )
 
-            url = reverse('file-api:upload')
+            url = reverse("file-api:upload")
 
             img_file = generate_image_file(size=(200, 200))
 
-            data = {
-                'f': img_file
-            }
+            data = {"f": img_file}
 
-            response = self.client.post(url, data, format='multipart')
+            response = self.client.post(url, data, format="multipart")
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(response.data["name"], "test.PNG")
             self.assertEqual(response.data["mimetype"], "image/png")
-            self.assertEqual(
-                response.data["size"],
-                img_file.getbuffer().nbytes
-            )
+            self.assertEqual(response.data["size"], img_file.getbuffer().nbytes)
             self.assertEqual(response.data["width"], 200)
             self.assertEqual(response.data["height"], 200)
 
@@ -439,32 +417,25 @@ class FileAPITests(APITestCase):
     def test_non_raster_image_variations(self):
         """Test if we upload a non raster image no variations is created."""
 
-        variations = {
-            "thumbnail": ["crop", 100, 100],
-            "small": ["resize", 100, 100]
-        }
+        variations = {"thumbnail": ["crop", 100, 100], "small": ["resize", 100, 100]}
 
-        raster_image_formats = [
-            "image/gif"
-        ]
+        raster_image_formats = ["image/gif"]
 
         with self.settings(
-                FILE_IMAGE_VARIATIONS=variations,
-                FILE_RASTER_IMAGE_FORMATS=raster_image_formats
+            FILE_IMAGE_VARIATIONS=variations,
+            FILE_RASTER_IMAGE_FORMATS=raster_image_formats,
         ):
             self.client.credentials(
-                HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key
+                HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
             )
 
-            url = reverse('file-api:upload')
+            url = reverse("file-api:upload")
 
             img_file = generate_image_file()
 
-            data = {
-                'f': img_file
-            }
+            data = {"f": img_file}
 
-            response = self.client.post(url, data, format='multipart')
+            response = self.client.post(url, data, format="multipart")
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             self.assertEqual(response.data["name"], "test.PNG")
             self.assertEqual(response.data["mimetype"], "image/png")
@@ -482,14 +453,13 @@ class FileAPITests(APITestCase):
         uuids = list(map(lambda x: x.uuid, test_files))
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:order')
+        url = reverse("file-api:order")
 
         # Shuffles the data
-        data = {
-            'data': [uuids[2], uuids[4], uuids[3], uuids[1], uuids[0]]
-        }
+        data = {"data": [uuids[2], uuids[4], uuids[3], uuids[1], uuids[0]]}
 
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -507,13 +477,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -524,13 +494,20 @@ class FileAPITests(APITestCase):
         uuids = list(map(lambda x: x.uuid, test_files))
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:order')
+        url = reverse("file-api:order")
 
         # Shuffles the data
         data = {
-            'data': ["ab3e6952-aaaa-aaaa-a726-2579206ee961", uuids[4], uuids[3], uuids[1], uuids[0]]
+            "data": [
+                "ab3e6952-aaaa-aaaa-a726-2579206ee961",
+                uuids[4],
+                uuids[3],
+                uuids[1],
+                uuids[0],
+            ]
         }
 
         response = self.client.post(url, data)
@@ -538,13 +515,13 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
 
@@ -555,13 +532,20 @@ class FileAPITests(APITestCase):
         uuids = list(map(lambda x: x.uuid, test_files))
 
         self.client.credentials(
-            HTTP_AUTHORIZATION='Token ' + self.admin_user_permitted_token.key)
+            HTTP_AUTHORIZATION="Token " + self.admin_user_permitted_token.key
+        )
 
-        url = reverse('file-api:order')
+        url = reverse("file-api:order")
 
         # Shuffles the data
         data = {
-            'data': ["ab3e6952-aaa-aaaa-a726-2579206ee961", uuids[4], uuids[3], uuids[1], uuids[0]]
+            "data": [
+                "ab3e6952-aaa-aaaa-a726-2579206ee961",
+                uuids[4],
+                uuids[3],
+                uuids[1],
+                uuids[0],
+            ]
         }
 
         response = self.client.post(url, data)
@@ -569,12 +553,12 @@ class FileAPITests(APITestCase):
 
         if self.display_doc:
             payload = data.copy()
-            payload['f'] = "test.pdf"
+            payload["f"] = "test.pdf"
             content = {
-                'title': "Upload file",
-                'url': url,
-                'http_method': 'POST',
-                'payload': payload,
-                'response': response.data
+                "title": "Upload file",
+                "url": url,
+                "http_method": "POST",
+                "payload": payload,
+                "response": response.data,
             }
             self.doc.display_section(content)
