@@ -27,7 +27,7 @@ setup(
     package_data={"cotidia.file": template_files},
     namespace_packages=["cotidia"],
     include_package_data=True,
-    install_requires=["django-storages==1.7.*", "reportlab>=3.4", "python-magic>=0.4"],
+    install_requires=["django-storages==1.14.*", "reportlab==4.2.*", "python-magic==0.4.*"],
     classifiers=[
         "Framework :: Django",
         "Intended Audience :: Developers",
